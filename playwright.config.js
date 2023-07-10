@@ -20,7 +20,7 @@ module.exports = defineConfig({
   use: {
     // trace: 'on-first-retry',
     browserName: 'chromium',//firefox,chromium,webkit
-    headless: false,
+    headless: true,
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure'
   }

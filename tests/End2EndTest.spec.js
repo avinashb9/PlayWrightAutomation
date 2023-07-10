@@ -1,15 +1,18 @@
 const {test,expect,request} = require("@playwright/test")
+const {APIUtils} = require("./utils/APIUtils")
+
 
 const loginPayload = {userEmail: "avinashbg@gmail.com",userPassword: "Playwright#7"};
-let token;
 const orderPayload = {orders: [ {country: "India",productOrderedId: "6262e990e26b7e1a10e89bfa" }]};
-let orderId;
+let response;
 
 test.beforeAll( async ()=>{
 
     //Login API
     const apiContext = await request.newContext();
-    const loginResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/auth/login",
+    const apiUtils = new APIUtils(apiContext,loginPayload);
+
+    /*const loginResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/auth/login",
     {
         data:loginPayload
     })
@@ -18,10 +21,11 @@ test.beforeAll( async ()=>{
     const loginRespJson = await loginResponse.json();
     console.log(loginRespJson)
     token = loginRespJson.token;
-    console.log(token)
+    console.log(token)*/
 
     //Order API
-    const orderResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/order/create-order",
+    response = await apiUtils.createOrder(orderPayload);
+    /*const orderResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/order/create-order",
         {
             data:orderPayload,
             headers:{
@@ -31,7 +35,7 @@ test.beforeAll( async ()=>{
         })
     const orderResponseJSON= await orderResponse.json();
     console.log(orderResponseJSON)
-    orderId = orderResponseJSON.orders[0];
+    orderId = orderResponseJSON.orders[0];*/
 });
 
 test.only('End 2 End test by using APIs', async ({page}) => {
@@ -39,7 +43,7 @@ test.only('End 2 End test by using APIs', async ({page}) => {
     //set token in the system local storage
     page.addInitScript(value => {
         window.localStorage.setItem('token',value);
-    },token);
+    },response.token);
     await page.goto("https://rahulshettyacademy.com/client");
     await expect(page).toHaveTitle("Let's Shop")
     
@@ -49,7 +53,7 @@ test.only('End 2 End test by using APIs', async ({page}) => {
     await expect(page.locator("tbody")).toBeVisible()
     const ordersList = page.locator("tbody tr")
     for(let i=0; i< await ordersList.count();++i){
-        if(orderId.includes(await ordersList.nth(i).locator("th").textContent())){
+        if(response.orderId.includes(await ordersList.nth(i).locator("th").textContent())){
             //click view button
             await ordersList.nth(i).locator("text=View").click()
             break;
@@ -57,5 +61,5 @@ test.only('End 2 End test by using APIs', async ({page}) => {
     }
 
     //validate orderId
-    expect(orderId.includes(await page.locator("div.email-container .col-text").textContent())).toBeTruthy()
+    expect(response.orderId.includes(await page.locator("div.email-container .col-text").textContent())).toBeTruthy()
 });
