@@ -6,6 +6,8 @@ const multipleDataSets = JSON.parse(JSON.stringify(require("./utils/testData.jso
 
 const { customtest } = require("./utils/test-base")
 
+test.describe.configure({mode:"parallel"})
+// test.describe.configure({mode:"serial"})
 
 test('Parameterized Test - Verify login with valid credentials and search product', async ({ page }) => {
     const poManager = new POManager(page);

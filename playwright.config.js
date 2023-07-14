@@ -26,3 +26,7 @@ module.exports = defineConfig({
   }
 });
 
+/*
+- tag based execution
+npx playwright test --grep=@Web
+*/

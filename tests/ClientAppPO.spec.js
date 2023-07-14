@@ -2,7 +2,7 @@ const {test, expect} = require('@playwright/test');
 const {POManager} = require('../pageObjects/POManager');
 
 
-test.only('End to End test using PageObject Model', async ({page}) => {
+test('End to End test using PageObject Model', async ({page}) => {
 
     const poManager = new POManager(page);
     const loginPage  = poManager.getLoginPage();
@@ -50,3 +50,15 @@ test.only('End to End test using PageObject Model', async ({page}) => {
     //validate orderId
     expect(orderId.includes(await ordersHistoryPage.getOrderIdFromView())).toBeTruthy();
 });
+
+
+test.only('Login test using PageObject Model', async ({page}) => {
+
+    const poManager = new POManager(page);
+    const loginPage  = poManager.getLoginPage();
+    await loginPage.goTo();
+    await expect(page).toHaveTitle("Let's Shop");
+
+    await loginPage.validLogin("avinashbg@gmail.com","Playwright#7");
+}
+);
